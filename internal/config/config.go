@@ -1,18 +1,18 @@
 package config
 
 import (
-	"github.com/https-whoyan/MafiaBotHelper/internal/http/server"
-	"log"
-	"os"
+	goLog "log"
 	"sync"
 
 	"github.com/https-whoyan/MafiaBotHelper/internal/bot"
+	"github.com/https-whoyan/MafiaBotHelper/internal/http/server"
+	"github.com/https-whoyan/MafiaBotHelper/internal/log"
 	"github.com/joho/godotenv"
 )
 
 type Config struct {
 	SrvConfig   *server.Config
-	Logger      *log.Logger
+	Logger      log.Logger
 	BotsConfigs []*bot.Config
 }
 
@@ -21,7 +21,7 @@ var (
 )
 
 const (
-	botsCount = 2
+	botsCount = 1
 )
 
 func LoadConfig() *Config {
@@ -29,7 +29,8 @@ func LoadConfig() *Config {
 	configOnce.Do(func() {
 		loadEnd()
 	})
-	cfg.Logger = log.New(os.Stderr, "", log.LstdFlags|log.Llongfile)
+	log.SetLogger(log.NewDefaultLogger())
+	cfg.Logger = log.GetLogger()
 	for numOfBot := range botsCount {
 		botCfg := bot.NewConfig(numOfBot)
 		cfg.BotsConfigs = append(cfg.BotsConfigs, botCfg)
@@ -41,6 +42,6 @@ func LoadConfig() *Config {
 func loadEnd() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		goLog.Fatal("Error loading .env file")
 	}
 }

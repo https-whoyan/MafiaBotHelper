@@ -2,7 +2,7 @@ package bot
 
 import (
 	"context"
-	"log"
+	"github.com/https-whoyan/MafiaBotHelper/internal/log"
 	"os"
 	"os/signal"
 	"strconv"
@@ -25,22 +25,17 @@ type Bot struct {
 	sess    bot.Client
 	members map[snowflake.ID]*discord.Member
 	roles   map[snowflake.ID]*roles.Role
-	logger  *log.Logger
+	logger  log.Logger
 }
 
-func NewBot(config *Config, logger *log.Logger) *Bot {
+func NewBot(config *Config) *Bot {
 	var b *Bot
-	botPrefix := "Bot " + strconv.Itoa(config.Num) + " " + logger.Prefix()
-	logger = log.New(
-		log.Writer(),
-		botPrefix,
-		log.Flags(),
-	)
+	botPrefix := "Bot " + strconv.Itoa(config.Num)
 	b = &Bot{
 		token:   config.Token,
 		members: make(map[snowflake.ID]*discord.Member),
 		roles:   make(map[snowflake.ID]*roles.Role),
-		logger:  logger,
+		logger:  log.NewLoggerWithPredix(botPrefix, true),
 	}
 	return b
 }
@@ -54,6 +49,7 @@ func (b *Bot) Init() error {
 			),
 		),
 	)
+	b.logger.Println("initializing bot")
 	if err != nil {
 		return err
 	}
@@ -66,6 +62,7 @@ func (b *Bot) Run(ctx context.Context) error {
 	if err := b.sess.OpenGateway(ctx); err != nil {
 		return err
 	}
+	b.logger.Println("open gateway")
 	b.userID = b.sess.ID()
 	defer func(ctx context.Context) {
 		b.sess.Close(ctx)

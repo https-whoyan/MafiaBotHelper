@@ -14,8 +14,11 @@ var (
 
 func main() {
 	cfg := config.LoadConfig()
-	apl := app.NewApp(cfg)
-	err := apl.Start(ctx)
+	apl, err := app.NewApp(ctx, cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = apl.Start(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}

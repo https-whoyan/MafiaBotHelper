@@ -5,9 +5,13 @@ import (
 	"github.com/https-whoyan/MafiaBotHelper/internal/service/bots"
 )
 
+const controllerName = "bots_controller"
+
 type Controller struct {
 	botsService bots.Service
 }
+
+func (c Controller) Name() string { return controllerName }
 
 func New(botsService bots.Service) *Controller {
 	return &Controller{
